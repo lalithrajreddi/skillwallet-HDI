@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import urllib.request
 import os
+import pickle
+from sklearn.preprocessing import LabelEncoder
 
 def download_and_preprocess():
     print("Starting dataset download and preprocessing...")
@@ -9,6 +11,7 @@ def download_and_preprocess():
     url = "https://raw.githubusercontent.com/yhpong/Scientific-Toolkit/master/HDI_Data.csv"
     local_raw_path = "hdi_raw.csv"
     local_processed_path = "hdi_processed.csv"
+    encoder_path = "country_encoder.pkl"
     
     # Step 1: Download raw dataset if not present
     if not os.path.exists(local_raw_path):
@@ -27,51 +30,37 @@ def download_and_preprocess():
     # Step 2: Load dataset
     df = pd.read_csv(local_raw_path, encoding='latin1', keep_default_na=False)
     print("Initial dataset shape:", df.shape)
-    print("Initial columns:", df.columns.tolist())
     
     # Step 3: Clean columns (convert string numeric values to float, handle commas)
     numeric_cols = ['Life expectancy', 'Expected yrs of schooling', 'Mean yrs of schooling', 'GNI per capita']
     
     for col in numeric_cols:
         if col in df.columns:
-            # Replace commas and spaces, coerce to float
             df[col] = df[col].astype(str).str.replace(',', '', regex=False)
             df[col] = pd.to_numeric(df[col], errors='coerce')
     
-    # Step 4: Handle missing values (fill null values using column mean methods)
-    print("\nNull values before filling:")
-    print(df[numeric_cols].isnull().sum())
-    
+    # Step 4: Handle missing values (fill null values using column mean)
     for col in numeric_cols:
         mean_val = df[col].mean()
         df[col] = df[col].fillna(mean_val)
-        print(f"Filled nulls in '{col}' with mean: {mean_val:.2f}")
         
-    print("\nNull values after filling:")
-    print(df[numeric_cols].isnull().sum())
-    
     # Step 5: Perform Feature Engineering (Calculate indices and composite HDI Score)
-    print("\nCalculating indices and composite HDI Score...")
-    
     # A: Health Index = (Life expectancy - 20) / (85 - 20)
-    df['Health_Index'] = (df['Life expectancy'] - 20) / (85 - 20)
-    df['Health_Index'] = df['Health_Index'].clip(0, 1) # clip to [0, 1]
+    df['Health_Index'] = (df['Life expectancy'] - 20) / 65.0
+    df['Health_Index'] = df['Health_Index'].clip(0, 1)
     
-    # B: Education Index = (Expected yrs of schooling index + Mean yrs of schooling index) / 2
-    # Expected schooling index = Expected yrs of schooling / 18
-    df['Expected_Schooling_Index'] = df['Expected yrs of schooling'] / 18
+    # B: Education Index = (Expected_Schooling_Index + Mean_Schooling_Index) / 2
+    df['Expected_Schooling_Index'] = df['Expected yrs of schooling'] / 18.0
     df['Expected_Schooling_Index'] = df['Expected_Schooling_Index'].clip(0, 1)
     
-    # Mean schooling index = Mean yrs of schooling / 15
-    df['Mean_Schooling_Index'] = df['Mean yrs of schooling'] / 15
+    df['Mean_Schooling_Index'] = df['Mean yrs of schooling'] / 15.0
     df['Mean_Schooling_Index'] = df['Mean_Schooling_Index'].clip(0, 1)
     
-    df['Education_Index'] = (df['Expected_Schooling_Index'] + df['Mean_Schooling_Index']) / 2
+    df['Education_Index'] = (df['Expected_Schooling_Index'] + df['Mean_Schooling_Index']) / 2.0
     
     # C: Income Index = (ln(GNI per capita) - ln(100)) / (ln(75000) - ln(100))
-    # GNI per capita must be > 0. Standard UNDP caps GNI at 75000 and 100.
     df['GNI_Cleaned'] = df['GNI per capita'].clip(100, 75000)
-    df['Income_Index'] = (np.log(df['GNI_Cleaned']) - np.log(100)) / (np.log(75000) - np.log(100))
+    df['Income_Index'] = (np.log(df['GNI_Cleaned']) - np.log(100.0)) / (np.log(75000.0) - np.log(100.0))
     df['Income_Index'] = df['Income_Index'].clip(0, 1)
     
     # D: Calculate geometric mean of the three dimensions for HDI Score
@@ -79,10 +68,6 @@ def download_and_preprocess():
     df['HDI Score'] = df['HDI Score'].round(3)
     
     # E: Classify country into development tier
-    # Very High: >= 0.800
-    # High: 0.700 - 0.799
-    # Medium: 0.550 - 0.699
-    # Low: < 0.550
     def categorize_hdi(score):
         if score >= 0.800:
             return 'Very High'
@@ -95,10 +80,49 @@ def download_and_preprocess():
             
     df['Development Tier'] = df['HDI Score'].apply(categorize_hdi)
     
+    # Step 6: Label Encoding for Country Name
+    print("Performing Label Encoding on Country Name...")
+    le = LabelEncoder()
+    df['Country_Encoded'] = le.fit_transform(df['Country Name'])
+    
+    # Save the label encoder for the Flask backend
+    with open(encoder_path, 'wb') as f:
+        pickle.dump(le, f)
+    print(f"Saved LabelEncoder to '{encoder_path}'")
+    
+    # Step 7: Reorder Columns to align with template.docx specifications
+    # Required indexes:
+    # 2: Country (encoded)
+    # 4: HDI Score (Y)
+    # 5: Life expectancy
+    # 6: Expected yrs of schooling
+    # 7: Mean yrs of schooling
+    # 8: GNI per capita
+    ordered_columns = [
+        'Rank',                     # Index 0
+        'Country Name',             # Index 1
+        'Country_Encoded',          # Index 2 (Y-independent)
+        'Country ISO',              # Index 3
+        'HDI Score',                # Index 4 (Y-dependent target)
+        'Life expectancy',          # Index 5 (Y-independent)
+        'Expected yrs of schooling',# Index 6 (Y-independent)
+        'Mean yrs of schooling',    # Index 7 (Y-independent)
+        'GNI per capita',           # Index 8 (Y-independent)
+        'Development Tier',         # Index 9
+        'Health_Index',             # Index 10
+        'Expected_Schooling_Index', # Index 11
+        'Mean_Schooling_Index',     # Index 12
+        'Education_Index',          # Index 13
+        'GNI_Cleaned',              # Index 14
+        'Income_Index'              # Index 15
+    ]
+    
+    df = df[ordered_columns]
+    
     # Save the processed dataset
     df.to_csv(local_processed_path, index=False)
     print(f"\nSaved processed dataset to '{local_processed_path}' (Shape: {df.shape})")
-    print(df[['Country Name', 'Life expectancy', 'GNI per capita', 'HDI Score', 'Development Tier']].head())
+    print(df.iloc[:5, :10])
     return True
 
 if __name__ == "__main__":

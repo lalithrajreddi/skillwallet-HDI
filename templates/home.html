@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Development Index (HDI) Predictor - Home</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .home-hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow-premium);
+            backdrop-filter: blur(10px);
+        }
+        .hero-title {
+            font-family: var(--font-heading);
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, #f8fafc, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-subtitle {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 30px auto;
+            line-height: 1.6;
+        }
+        .hero-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 16px;
+            padding: 14px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            transition: var(--transition-smooth);
+        }
+        .hero-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+        }
+        .hero-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-logo">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-.778.099-1.533.284-2.253" />
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>HDI Predictor</h1>
+                    <p>Machine Learning Powered Global Analysis</p>
+                </div>
+            </div>
+            
+            <!-- Predict Button in Top Right Corner -->
+            <div>
+                <a href="/predict" class="hero-btn" style="padding: 10px 20px; font-size: 14px;">
+                    Predict Now
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Body -->
+        <main class="app-main">
+            
+            <!-- Hero banner -->
+            <section class="home-hero">
+                <h2 class="hero-title">Human Development Index Predictor</h2>
+                <p class="hero-subtitle">
+                    Assess, simulate, and predict country development tiers using advanced machine learning regression models. Evaluate how health, education, and economic indicators combine to shape global human capacity.
+                </p>
+                <a href="/predict" class="hero-btn">
+                    <span>Launch Predictor Engine</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
+                </a>
+            </section>
+
+            <!-- Grid explaining HDI Dimensions -->
+            <div class="about-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                
+                <!-- Card 1: What is HDI -->
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h2 class="card-title">What is the Human Development Index?</h2>
+                    </div>
+                    <div class="card-body about-text">
+                        <p>The <strong>Human Development Index (HDI)</strong> is a statistical composite index of life expectancy, education, and per capita income indicators, which are used to rank countries into four tiers of human development.</p>
+                        <p>It was developed by economists Mahbub ul Haq and Amartya Sen, and launched by the United Nations Development Programme (UNDP) in 1990. The index emphasizes that <strong>people and their capabilities</strong> should be the primary measure of a country's development rather than economic growth alone.</p>
+                    </div>
+                </div>
+
+                <!-- Card 2: Three Dimensions -->
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Three Dimensions of HDI</h2>
+                    </div>
+                    <div class="card-body about-text">
+                        <ul class="styled-list">
+                            <li>
+                                <strong>Long and Healthy Life (Health):</strong> Evaluated via life expectancy at birth. It reflects access to healthcare, clean water, safety, and nutrition.
+                            </li>
+                            <li>
+                                <strong>Knowledge & Education:</strong> Evaluated via a combination of Expected Years of Schooling (for children entering school) and Mean Years of Schooling (for adults aged 25+).
+                            </li>
+                            <li>
+                                <strong>Decent Standard of Living (Income):</strong> Evaluated via Gross National Income (GNI) per capita adjusted for purchasing power parity (PPP).
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+        
+        <!-- Footer -->
+        <footer class="app-footer-bar" style="margin-top: 40px;">
+            <p>Human Development Index (HDI) Predictor Dashboard &copy; 2026. Made with Python, Flask, and Scikit-Learn.</p>
+        </footer>
+        
+    </div>
+</body>
+</html>

@@ -7,7 +7,7 @@ from sklearn import metrics
 import os
 
 def train_hdi_model():
-    print("Starting Machine Learning Model Training...")
+    print("Starting Machine Learning Model Training (aligned with template.docx indexes)...")
     local_processed_path = "hdi_processed.csv"
     model_path = "hdi_model.pkl"
     
@@ -18,9 +18,19 @@ def train_hdi_model():
     # Step 1: Load preprocessed dataset
     df = pd.read_csv(local_processed_path)
     
-    # Step 2: Select independent (features) and dependent (target) variables
-    X = df[['Life expectancy', 'Expected yrs of schooling', 'Mean yrs of schooling', 'GNI per capita']]
-    y = df['HDI Score']
+    # Step 2: Select independent (features) and dependent (target) variables by column index numbers
+    # Column Indexes from download_data.py:
+    # 2: Country_Encoded (Country)
+    # 4: HDI Score (Y)
+    # 5: Life expectancy
+    # 6: Expected yrs of schooling
+    # 7: Mean yrs of schooling
+    # 8: GNI per capita
+    X = df.iloc[:, [2, 5, 6, 7, 8]]
+    y = df.iloc[:, 4]
+    
+    print("Selected Independent Features (X):", X.columns.tolist())
+    print("Selected Dependent Target (Y):", y.name)
     
     # Step 3: Split dataset into training and testing sets (80% train, 20% test)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)

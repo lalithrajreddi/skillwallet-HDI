@@ -1,26 +1,28 @@
 # Human Development Index (HDI) Predictor
 
-An interactive, end-to-end Machine Learning web application designed to predict the **Human Development Index (HDI)** of countries. The project leverages **Python**, **Flask**, **Scikit-Learn**, and **Seaborn** to build a predictive engine and data analysis dashboard, presenting results through a responsive, modern dark-themed web interface.
+An interactive, end-to-end Machine Learning web application designed to predict the **Human Development Index (HDI)** of countries. The project leverages **Python**, **Flask**, **Scikit-Learn**, and **Seaborn** to build a predictive engine and data analysis dashboard, presenting results through a responsive, modern dark-themed multi-page web interface.
 
 ---
 
 ## 🚀 Key Features
 
-*   **Predictive ML Engine**: Enter Life Expectancy, Expected/Mean Years of Schooling, and GNI Per Capita. The application uses a trained **Linear Regression** model to predict the country's HDI score, classify it into one of the four official UNDP categories (**Very High, High, Medium, or Low**), calculate dimension-specific sub-indices, and dynamically recommend comparable countries from the dataset.
-*   **Insights & EDA Gallery**: Interactive visualization hub showcasing 6 detailed exploratory charts (heatmaps, distributions, strip plots, and logarithmic scatter plots) with a clean lightbox viewer.
-*   **Country Explorer Database**: Searchable, filterable interactive table displaying indicators and official HDI scores for 188 nations. Clicking any country's row dynamically autofills the predictor form for quick evaluations.
-*   **Methodology & Statistics**: Displays official UNDP mathematical calculation formulas and outputs the actual trained model coefficients and intercept parameters directly from the serialized model.
+*   **Multi-Page Architecture**: Realigned with standard project guidelines into distinct, dedicated pages:
+    *   **Home Page (`home.html`)**: Features an introduction to the Human Development Index (HDI) and its three dimensions with a quick-launch link to the engine.
+    *   **Prediction Page (`indexnew.html`)**: Allows users to select a country from an alphabetical dropdown, adjust key indicators, and submit form posts to calculate predictions.
+*   **Predictive ML Engine**: Uses a trained **Linear Regression** model with 5 variables (including label-encoded country codes) to predict a country's HDI score, classify it into the official UNDP tiers (**Very High, High, Medium, or Low**), calculate dimension-specific indices, and recommended comparable countries.
+*   **10-Plot Insights Hub**: Expanded Exploratory Data Analysis (EDA) gallery featuring exactly 10 statistical plots (strip plots, distributions, heatmaps, and scatter plots) rendered using the first 20 rows of the dataset to ensure a clean, uncluttered visual layout.
+*   **Label Encoding Integration**: Features dynamic label encoding for country categories, allowing spatial representations to serve as active model parameters.
 
 ---
 
 ## 🛠️ Technology Stack
 
-*   **Backend Web Framework**: `Flask` (Python web server & API endpoints)
+*   **Backend Web Framework**: `Flask` (Python web server handling routing and HTML form POST requests)
 *   **Machine Learning**: `Scikit-Learn` (Linear Regression model fitting & metrics evaluation)
-*   **Data Manipulation**: `Pandas` & `NumPy` (Feature engineering, cleaning, and indexing)
+*   **Data Manipulation**: `Pandas` & `NumPy` (Feature engineering, cleaning, label encoding, and indexing)
 *   **Data Visualization**: `Seaborn` & `Matplotlib` (Exploratory Data Analysis plots generation)
-*   **Serialization**: `Pickle` (Model saving and dynamic reloading)
-*   **Frontend Interface**: `HTML5`, `Vanilla CSS3` (Glassmorphism design system, sliding transitions, glowing accents, and responsive layout), and `ES6 Javascript` (Async Fetch requests, DOM manipulation, input synchronization, and filtering).
+*   **Serialization**: `Pickle` (Saves both trained ML model and country `LabelEncoder` parameters)
+*   **Frontend Interface**: `HTML5`, `Vanilla CSS3` (Premium space-dark design system, sliding transitions, glowing accents, and responsive layout).
 
 ---
 
@@ -28,28 +30,33 @@ An interactive, end-to-end Machine Learning web application designed to predict 
 
 ```
 SmartWallet/ (Project Directory)
-├── app.py                  # Flask web backend application hosting routes
-├── download_data.py        # Data pipeline: downloads, cleans, and calculates target HDI
-├── eda.py                  # Generates high-quality statistical plots
-├── train_model.py          # Splits dataset, trains model, and serializes it
+├── app.py                  # Flask web backend application hosting routes (GET/POST)
+├── download_data.py        # Data pipeline: cleans, normalizes, label encodes, and sorts columns
+├── eda.py                  # Generates exactly 10 statistical visualizations from first 20 rows
+├── train_model.py          # Splits dataset, trains model by index numbers, and serializes it
 ├── hdi_model.pkl           # Serialized Linear Regression model
+├── country_encoder.pkl     # Serialized LabelEncoder for country categories
 ├── hdi_processed.csv       # Clean preprocessed country dataset
+├── hdi_raw.csv             # Raw Kaggle-downloaded CSV file
 ├── model_summary.txt       # Saved coefficients and testing performance logs
 ├── requirements.txt        # Required Python libraries list
 ├── .gitignore              # Ignores pycache, IDE configs, and environments
 ├── templates/
-│   └── index.html          # Dynamic HTML dashboard interface
+│   ├── home.html           # Landing page with introduction and portal link
+│   └── indexnew.html       # Prediction form and report template
 └── static/
     ├── css/
     │   └── style.css       # Premium space-dark stylesheet
-    ├── js/
-    │   └── main.js         # Frontend controller scripts (Fetch calls, UI tab transitions)
-    └── plots/              # Pre-rendered Exploratory Data Analysis charts
+    └── plots/              # Pre-rendered 10 Exploratory Data Analysis charts
         ├── correlation_matrix.png
         ├── education_vs_hdi.png
+        ├── expected_schooling_vs_hdi.png
         ├── gni_vs_hdi.png
         ├── hdi_distribution.png
+        ├── life_expectancy_distribution.png
         ├── life_expectancy_vs_hdi.png
+        ├── mean_schooling_distribution.png
+        ├── schooling_vs_hdi_strip.png
         └── strip_plot.png
 ```
 
@@ -112,22 +119,5 @@ python app.py
 ```
 
 Once running, open your web browser and navigate to:
-👉 **[http://127.0.0.1:5000/](http://127.0.0.1:5000/)**
-
----
-
-## 🧪 Scenario Verification Parameters
-
-You can verify the model predictions in the **Predictive Engine** tab using these scenario inputs:
-
-### Scenario 1: Very High Human Development (Emerging Developed Tier)
-*   **Inputs**: Life Expectancy = `82.0` yrs, Expected Schooling = `16.0` yrs, Mean Schooling = `12.0` yrs, GNI = `50,000` PPP$
-*   **Expected Outcome**: **Very High** classification. Predicted HDI Score $\approx$ **`0.913`**. (Similar countries: Sweden, Liechtenstein, New Zealand).
-
-### Scenario 2: Emerging Economy Development Gaps (Developing Tier)
-*   **Inputs**: Life Expectancy = `70.0` yrs, Expected Schooling = `12.0` yrs, Mean Schooling = `8.0` yrs, GNI = `10,000` PPP$
-*   **Expected Outcome**: **Medium** classification. Predicted HDI Score $\approx$ **`0.660`**. (Similar countries: Kyrgyzstan, South Africa, Iraq).
-
-### Scenario 3: Development Intervention Priority (Low Tier)
-*   **Inputs**: Life Expectancy = `55.0` yrs, Expected Schooling = `8.0` yrs, Mean Schooling = `4.0` yrs, GNI = `1,500` PPP$
-*   **Expected Outcome**: **Low** classification. Predicted HDI Score $\approx$ **`0.432`**. (Similar countries: Democratic Republic of Congo, Liberia, Guinea-Bissau).
+*   👉 Home Page: **[http://127.0.0.1:5000/](http://127.0.0.1:5000/)**
+*   👉 Prediction Engine Page: **[http://127.0.0.1:5000/predict](http://127.0.0.1:5000/predict)**
