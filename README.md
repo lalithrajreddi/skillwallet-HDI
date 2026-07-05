@@ -29,7 +29,7 @@ An interactive, end-to-end Machine Learning web application designed to predict 
 ## 📂 Codebase File Structure
 
 ```
-SmartWallet/ (Project Directory)
+SkillWallet/ (Project Directory)
 ├── app.py                  # Flask web backend application hosting routes (GET/POST)
 ├── download_data.py        # Data pipeline: cleans, normalizes, label encodes, and sorts columns
 ├── eda.py                  # Generates exactly 10 statistical visualizations from first 20 rows
@@ -76,7 +76,7 @@ python --version
 ### 2. Clone/Open the Project Directory
 Navigate into the project root directory in your terminal:
 ```bash
-cd d:/Projects/SmartWallet-HDI
+cd d:/Projects/SkillWallet-HDI
 ```
 
 ### 3. Create a Virtual Environment (Recommended)
